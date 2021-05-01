@@ -4,14 +4,19 @@ import com.bogdanbrl.recipe.domain.Recipe;
 import com.bogdanbrl.recipe.repositories.RecipeRepository;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import javax.swing.text.html.Option;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 public class RecipeServiceImplTest {
 
@@ -27,6 +32,21 @@ public class RecipeServiceImplTest {
     }
 
     @Test
+    public void getRecipeByIdTest() throws Exception{
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        Optional<Recipe> recipeOptional = Optional.of(recipe);
+
+        Mockito.when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+
+        Recipe recipeReturned = recipeService.findById(1L);
+
+        assertNotNull("Null recipe returned", recipeReturned);
+        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, never()).findAll();
+    }
+
+    @Test
     public void getRecipes() {
 
         Recipe recipe = new Recipe();
@@ -39,6 +59,6 @@ public class RecipeServiceImplTest {
         recipes = recipeService.getRecipes();
 
         assertEquals(recipes.size(), 1);
-        Mockito.verify(recipeRepository, Mockito.times(1)).findAll();
+        verify(recipeRepository, Mockito.times(1)).findAll();
     }
 }
