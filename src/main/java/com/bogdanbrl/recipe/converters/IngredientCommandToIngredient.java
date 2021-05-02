@@ -20,9 +20,10 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
     @Nullable
     @Override
     public Ingredient convert(IngredientCommand source) {
-        if(source == null){
+        if (source == null) {
             return null;
         }
+
         final Ingredient ingredient = new Ingredient();
         ingredient.setId(source.getId());
         ingredient.setAmount(source.getAmount());

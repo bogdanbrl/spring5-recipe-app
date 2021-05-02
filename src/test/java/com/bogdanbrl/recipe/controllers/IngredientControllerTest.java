@@ -1,6 +1,8 @@
 package com.bogdanbrl.recipe.controllers;
 
+import com.bogdanbrl.recipe.commands.IngredientCommand;
 import com.bogdanbrl.recipe.commands.RecipeCommand;
+import com.bogdanbrl.recipe.services.IngredientService;
 import com.bogdanbrl.recipe.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class IngredientControllerTest {
 
     @Mock
+    IngredientService ingredientService;
+
+    @Mock
     RecipeService recipeService;
 
     IngredientController controller;
@@ -23,7 +28,7 @@ class IngredientControllerTest {
     @BeforeEach
     void setUp() throws Exception{
         MockitoAnnotations.initMocks(this);
-        controller = new IngredientController(recipeService);
+        controller = new IngredientController(recipeService, ingredientService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
@@ -42,5 +47,20 @@ class IngredientControllerTest {
 
         // then
         Mockito.verify(recipeService, Mockito.times(1)).findCommandById(ArgumentMatchers.anyLong());
+    }
+
+    @Test
+    void testShowIngredient() throws Exception{
+        // given
+        IngredientCommand ingredientCommand = new IngredientCommand();
+
+        // when
+        Mockito.when(ingredientService.findByRecipeIdAndIngredientId(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong())).thenReturn(ingredientCommand);
+
+        // then
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/ingredient/2/show"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("recipe/ingredient/show"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("ingredient"));
     }
 }
